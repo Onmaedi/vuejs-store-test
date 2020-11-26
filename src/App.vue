@@ -1,30 +1,61 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div>
+    <select @change="onChange($event)">
+      <option value="">Select an option</option>
+      <option v-for="lang in languages" :value="lang.value" :key="lang.id">
+        {{ lang.value }}
+      </option>
+    </select>
+
+    <hr />
+
+    <table border="1" width="100%">
+      <thead>
+        <th>#</th>
+        <th>Author</th>
+        <th>Repository Name</th>
+        <th>Stars</th>
+      </thead>
+      <tbody>
+        <tr v-for="repo in repos" :key="repo.id">
+          <td>{{ repo.id }}</td>
+          <td>
+            <img :src="repo.owner.avatar_url" alt="avatar" width="100" />
+          </td>
+          <td>{{ repo.name }}</td>
+          <td>{{ repo.stargazers_count }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <router-view/>
 </template>
 
+<script>
+export default {
+  data: () => ({
+   
+  }),
+  computed: {
+    repos: function () {
+      return this.$store.state.repositories.data;
+    },
+    languages: function () {
+      return this.$store.state.languages
+    }
+  },
+  mounted: function () {
+    this.$store.dispatch("GET_ALL_REPOS", { lang: "" });
+    this.$store.dispatch("GET_ALL_LANGUAGES");
+  },
+  methods: {
+    onChange(event) {
+      const value = event.target.value;
+      const payload = { lang: value };
+      this.$store.dispatch("GET_ALL_REPOS", payload);
+    },
+  },
+};
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
